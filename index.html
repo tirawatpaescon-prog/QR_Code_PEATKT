@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team QR Hub: Permanent & Custom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ushelp/EasyQRCodeJS@master/dist/easy.qrcode.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8 font-sans">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-6">
+            <header class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <h1 class="text-2xl font-bold text-gray-800">ระบบสร้าง QR Code ถาวรสำหรับทีม</h1>
+                <p class="text-gray-500 text-sm italic">ไฟล์จะถูกเก็บที่ GitHub ของคุณโดยไม่มีวันหมดอายุ</p>
+            </header>
+
+            <div class="space-y-4">
+                <div class="p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm">
+                    <h3 class="text-lg font-bold text-blue-800 flex items-center mb-1">
+                        <span class="mr-2">🛠️</span> หัวข้อที่ 1: บีบอัดรูปภาพ
+                    </h3>
+                    <p class="text-xs text-blue-600 mb-4">ใช้ลดขนาดรูปถ่ายให้เล็กลง (แนะนำสำหรับภาพขนาดเกิน 5MB) เพื่อให้ไม่ติดลิมิตการอัปโหลด</p>
+                    <div class="flex gap-2 items-center">
+                        <input type="file" id="compressorInput" accept="image/*" class="text-xs w-full">
+                        <button onclick="handleCompression()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md transition">เริ่มบีบอัด</button>
+                    </div>
+                </div>
+
+                <div class="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-sm">
+                    <h3 class="text-lg font-bold text-emerald-800 flex items-center mb-1">
+                        <span class="mr-2">📄</span> หัวข้อที่ 2: ฝากไฟล์เอกสาร
+                    </h3>
+                    <p class="text-xs text-emerald-600 mb-4">รองรับไฟล์ PDF, Word, Excel, Powerpoint เพื่อสร้าง QR Code สำหรับดูงานหรือดาวน์โหลดได้ถาวร</p>
+                    <input type="file" id="docFile" class="text-xs mb-3 block w-full border-b border-emerald-200 pb-2">
+                    <button onclick="uploadToGithub('docFile')" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition">อัปโหลดเอกสาร & สร้าง QR</button>
+                </div>
+
+                <div class="p-5 bg-rose-50 rounded-2xl border border-rose-100 shadow-sm">
+                    <h3 class="text-lg font-bold text-rose-800 flex items-center mb-1">
+                        <span class="mr-2">🎬</span> หัวข้อที่ 3: ฝากไฟล์วิดีโอ
+                    </h3>
+                    <p class="text-xs text-rose-600 mb-4">รองรับไฟล์วิดีโอ MP4 / MOV เพื่อทำ QR ให้คนกดดูคลิป (แนะนำไฟล์สั้น หรือขนาดไม่เกิน 25MB)</p>
+                    <input type="file" id="videoFile" accept="video/*" class="text-xs mb-3 block w-full border-b border-rose-200 pb-2">
+                    <button onclick="uploadToGithub('videoFile')" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold hover:bg-rose-700 shadow-lg shadow-rose-200 transition">อัปโหลดวิดีโอ & สร้าง QR</button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-200">
+                    <h3 class="font-bold text-gray-700 mb-4">🎨 ตกแต่ง QR Code ก่อนดาวน์โหลด</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div><label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">สี QR</label><input type="color" id="dotColor" value="#000000" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">สีพื้นหลัง</label><input type="color" id="bgColor" value="#ffffff" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div class="col-span-2 md:col-span-1"><label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">ใส่โลโก้ URL (ถ้ามี)</label><input type="text" id="logoUrl" placeholder="https://..." class="w-full text-xs p-1.5 border rounded border-gray-200"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-200 sticky top-8 text-center">
+                <h3 class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-6">ตัวอย่าง QR Code</h3>
+                <div id="loading" class="hidden mb-4 text-indigo-600 animate-pulse text-sm font-bold italic">กำลังส่งไฟล์ไปที่ GitHub...</div>
+                <div id="qrcodeDisplay" class="flex justify-center mb-6 min-h-[220px] items-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <span class="text-gray-300 text-xs p-6">รอผลการอัปโหลด...</span>
+                </div>
+                <div id="resultActions" class="hidden space-y-4">
+                    <p class="text-[10px] text-blue-500 break-all bg-blue-50 p-2 rounded" id="linkPath"></p>
+                    <button onclick="downloadQR()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center hover:bg-black transition-all shadow-xl">
+                        ⬇️ ดาวน์โหลดรูป QR Code (.png)
+                    </button>
+                    <button onclick="window.location.reload()" class="text-xs text-gray-400 underline">ล้างค่าทั้งหมด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ส่วนที่ต้องเติมเอง ---
+        const GITHUB_CONFIG = {
+            TOKEN: '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',
+            OWNER: 'tirawatpaescon-prog',
+            REPO: 'Qr Code PEATKT'
+        };
+
+        let qrcodeObj = null;
+
+        async function uploadToGithub(inputId) {
+            const fileInput = document.getElementById(inputId);
+            const file = fileInput.files[0];
+            if (!file) return alert("กรุณาเลือกไฟล์ก่อนครับ");
+            document.getElementById('loading').classList.remove('hidden');
+            
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const content = reader.result.split(',')[1];
+                const folder = inputId === 'docFile' ? 'docs' : 'videos';
+                const fileName = `team-uploads/${folder}/${Date.now()}_${file.name}`;
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/${fileName}`;
+
+                try {
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${GITHUB_CONFIG.TOKEN}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Upload via Web: ${file.name}`, content: content })
+                    });
+                    if (res.ok) {
+                        const directLink = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/${fileName}`;
+                        generateQR(directLink);
+                    } else { alert("อัปโหลดไม่สำเร็จ: ไฟล์อาจใหญ่เกิน 25MB หรือ Token หมดอายุ"); }
+                } catch (e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"); }
+                finally { document.getElementById('loading').classList.add('hidden'); }
+            };
+        }
+
+        function generateQR(link) {
+            const display = document.getElementById('qrcodeDisplay');
+            display.innerHTML = "";
+            document.getElementById('resultActions').classList.remove('hidden');
+            document.getElementById('linkPath').innerText = link;
+            const options = {
+                text: link, width: 280, height: 280,
+                colorDark: document.getElementById('dotColor').value,
+                colorLight: document.getElementById('bgColor').value,
+                logo: document.getElementById('logoUrl').value || "",
+                logoWidth: 70, logoHeight: 70, correctLevel: QRCode.CorrectLevel.H
+            };
+            qrcodeObj = new QRCode(display, options);
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcodeDisplay canvas');
+            if (!canvas) return;
+            const image = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = `QR_Work_${Date.now()}.png`;
+            link.click();
+        }
+
+        async function handleCompression() {
+            const file = document.getElementById('compressorInput').files[0];
+            if(!file) return alert("เลือกรูปก่อน");
+            const compressed = await imageCompression(file, { maxSizeMB: 1, useWebWorker: true });
+            imageCompression.downloadFile(compressed);
+        }
+    </script>
+</body>
+</html>
